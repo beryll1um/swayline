@@ -1,0 +1,28 @@
+[package]
+name = "swaywm"
+edition.workspace = true
+publish = false
+
+[dependencies]
+anyhow = {
+	version = "1.0.102",
+}
+zerocopy = {
+	version = "0.8.40",
+	features = [
+		"derive",
+	],
+}
+tokio = {
+	version = "1.50.0",
+	features = [
+		"net",
+		"io-util",
+	],
+}
+serde = {
+	version = "1.0.228",
+	features = [
+		"derive",
+	],
+}

@@ -1,0 +1,9 @@
+[workspace]
+resolver = "3"
+members = [
+	"crates/swaywm",
+	"crates/swayline"
+]
+
+[workspace.package]
+edition = "2024"
