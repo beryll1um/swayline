@@ -39,6 +39,7 @@ async fn main() -> Result<()> {
 	let args = Args::parse();
 	// Establish a connection to the Swaywm IPC server to listen for events.
 	let mut client = swaywm::Ipc::new(args.swaysock).await?;
+
 	// Receive initial inputs early during the application startup.
 	client.send(swaywm::IpcCommand::GetInputs, "").await?;
 	let mut layout = client
@@ -50,16 +51,13 @@ async fn main() -> Result<()> {
 			}
 			serde_json::from_slice::<Vec<swaywm::InputDevice>>(&payload)
 				.map_err(|err| {
-					anyhow!("failed to parse IPC inputs response: {err}")
+					anyhow!("Failed to parse IPC inputs response: {err}")
 				})
-		})
-		.and_then(|devices| {
-			devices
-				.into_iter()
-				.find(|device| device.xkb_active_layout_name.is_some())
-				.map(|device| device.xkb_active_layout_name.unwrap())
-				.context("No inputs to parse from IPC response")
-		})?;
+		})?
+		.into_iter()
+		.find_map(|device| device.xkb_active_layout_name)
+		.context("No inputs to parse from IPC response")?;
+
 	// Subscribe to the input type events messages (e.g. xkb_layout change).
 	client
 		.send(swaywm::IpcCommand::Subscribe, "[\"input\"]")
@@ -71,6 +69,7 @@ async fn main() -> Result<()> {
 	if resp.success != true {
 		return Err(anyhow!("Failed to subscribe input events successfully"));
 	}
+
 	// Wait for the layout change message or interval to display the status.
 	let mut interval =
 		tokio::time::interval(Duration::from_secs_f64(args.interval));

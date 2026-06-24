@@ -51,8 +51,8 @@ pub enum IpcCommand {
 
 impl TryFrom<u32> for IpcCommand {
 	type Error = Error;
-	fn try_from(value: u32) -> Result<Self> {
-		match value {
+	fn try_from(r#type: u32) -> Result<Self> {
+		match r#type {
 			IPC_SUBSCRIBE => Ok(Self::Subscribe),
 			IPC_GET_INPUTS => Ok(Self::GetInputs),
 			IPC_EVENT_INPUT => Ok(Self::InputEvent),
